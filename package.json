@@ -1,0 +1,42 @@
+{
+  "name": "cozy-regular-build",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha tests"
+  },
+  "bin": {
+    "corbu": "bin/corbu",
+    "use": "bin/use"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "assets-webpack-plugin": "3.4.0",
+    "async": "2.0.0-rc.5",
+    "autoprefixer": "6.3.6",
+    "browser-sync": "2.12.12",
+    "browser-sync-webpack-plugin": "1.0.3",
+    "brunch": "2.8.0",
+    "coffee-jshint": "0.2.3",
+    "coffee-script": "1.10.0",
+    "coffeelint": "1.15.7",
+    "copy-webpack-plugin": "3.0.1",
+    "css-mqpacker": "5.0.1",
+    "eslint": "^2.11.1",
+    "extract-text-webpack-plugin": "1.0.1",
+    "forever": "^0.15.2",
+    "glob": "^7.0.3",
+    "install": "0.8.1",
+    "jade2commonjs": "0.1.0",
+    "jshint": "^2.9.2",
+    "mkdirp": "0.5.1",
+    "mocha": "2.5.3",
+    "nodemon": "1.9.2",
+    "npm-run-all": "2.1.1",
+    "pug-runtime": "2.0.1",
+    "rimraf": "2.5.2",
+    "webpack": "1.13.1"
+  }
+}

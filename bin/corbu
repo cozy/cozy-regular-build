@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+
+var corbu = require('../index')
+path = require('path')
+
+function exit( code ){
+    setTimeout(function(){ process.exit(code) }, 100)
+}
+
+
+// handle options
+var options = {
+    dev: '--dev',
+    debug: '--debug',
+    sameLocales: '--same-locales',
+    brunch: '--brunch'
+}
+
+corbu.hasOption = function(opt){
+    return process.argv.indexOf(opt) > 0 ||
+    process.argv.indexOf(options[opt]) > 0 ||
+    (corbu.appServerPackage.corbu && (
+    corbu.appServerPackage.corbu[opt] ||
+    corbu.appServerPackage.corbu[options[opt]]))
+}
+
+for(var key in options) if(options.hasOwnProperty(key))
+    corbu[key] = corbu.hasOption(key)
+
+
+// handle command
+var command = process.argv[2];
+var aliases = {
+    "build:client": "buildClient",
+    "build:server": "buildServer",
+    "travis-before": "travisBefore",
+    "travis-after-success": "doPublish"
+};
+
+if( aliases[command] )
+    command = aliases[command]
+
+if( corbu[command] ){
+    console.log('cozy-regular-build', command)
+    corbu[command](function( err ){
+        if( err ){
+            console.log(err.stack);
+            exit(err.code || 1)
+        } else {
+            console.log('DONE')
+            exit(0)
+        }
+    });
+}else{
+    console.log("unknown command ", command)
+    exit(1)
+}

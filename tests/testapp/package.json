@@ -1,0 +1,22 @@
+{
+  "name": "cozy-testapp",
+  "version": "1.0.0",
+  "description": "an app used to test cozy-regular-build",
+  "main": "build/server.js",
+  "scripts": {
+    "test": "use corbu"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aenario/cozy-testapp.git"
+  },
+  "keywords": [
+    "test"
+  ],
+  "author": "Cozy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aenario/cozy-testapp/issues"
+  },
+  "homepage": "https://github.com/aenario/cozy-testapp#readme"
+}
