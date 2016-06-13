@@ -30,7 +30,7 @@ function extendPackage(callback){
             "travis-after": "use corbu",
             "tx": "tx pull --all || true"
         },
-        "dev-dependencies":{
+        "devDependencies":{
             "cozy-regular-build": require('../package.json').version,
         },
         "dependencies": dependencies
