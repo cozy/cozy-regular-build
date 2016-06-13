@@ -4,7 +4,7 @@ var paths = require('./filepaths')
 
  function coffee(source, dest, callback){
      var args = ['--bare', '--map', '--output', dest, '--compile', source]
-     if (corbu.watch) args.push('--watch')
+     if (corbu.doeswatch) args.push('--watch')
 
      run({
          command: corbu.getDependencyBinary('coffee'),

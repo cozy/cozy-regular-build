@@ -11,7 +11,7 @@ var paths = require('./filepaths')
 function noop(){}
 module.exports = function(callback){
     // use the `OPTIMIZE` env VAR to switch from dev to production build
-    var optimize = !corbu.dev && !corbu.watch;
+    var optimize = !corbu.dev && !corbu.doeswatch;
 
     /**
      * Loaders used by webpack
@@ -154,6 +154,6 @@ module.exports = function(callback){
         postcss: postcss
     });
 
-    if(corbu.watch) compiler.run(callback)
+    if(corbu.doeswatch) compiler.run(callback)
     else compiler.watch({}, noop)
 }

@@ -27,7 +27,7 @@ function ensureDS(callback){
 
 var nocallback = function(){}
 module.exports = function(callback){
-    corbu.watch = true
+    corbu.doeswatch = true
     ensureDS(function(err){
         if(err) return callback(err);
         corbu.buildClient(nocallback);
