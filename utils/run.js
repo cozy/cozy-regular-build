@@ -1,7 +1,7 @@
 var corbu = require('../index');
 
 module.exports = function(options, callback){
-    if(corbu.debug || true)
+    if(corbu.debug)
         console.log('RUN', options.command, options.args.join(' '), "\n")
 
     var child = require('child_process').spawn(options.command, options.args, {
