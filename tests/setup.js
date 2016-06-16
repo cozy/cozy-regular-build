@@ -20,17 +20,16 @@ describe('Setup', function(){
 
     it('When corbu is installed globally', function(done){
         this.timeout(10*MIN);
-        done(null);
-        // exec('npm install --quiet --global .', {
-        //     cwd: path.resolve(__dirname, '..')
-        // }, function(err, stdout, stderr){
-        //     console.log(stdout, stderr);
-        //     done(err);
-        // })
+        exec('npm install --quiet --global .', {
+            cwd: path.resolve(__dirname, '..')
+        }, function(err, stdout, stderr){
+            console.log(stdout, stderr);
+            done(null);
+        })
     })
 
     it('When corbu setup is invoked on a project.', function(done){
-        this.timeout(4000)
+        this.timeout(8000)
         exec('corbu setup', {
             cwd: TESTAPP
         }, done)
