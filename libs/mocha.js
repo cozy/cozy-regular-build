@@ -10,9 +10,10 @@ function mocha(tests, callback){
     if(!env['NAME']) env['NAME'] = corbu.appServerPackage.name
     if(!env['TOKEN']) env['TOKEN'] = 'apptoken'
 
-    var args = [tests, '--reporter', 'spec', '--colors', '--bail']
-    args = args.concat(['--globals', 'setImmediate,clearImmediate'])
-    args = args.concat(['--compilers', 'coffee:coffee-script/register'])
+    var args = [tests, '--reporter', 'spec', '--colors', '--bail',
+                '--globals', 'setImmediate,clearImmediate',
+                '--compilers', 'coffee:coffee-script/register',
+                '--require', require.resolve('should')]
 
     run({
         command: corbu.getDependencyBinary('mocha'),

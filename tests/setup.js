@@ -7,8 +7,7 @@ var TESTAPP = path.join(__dirname, 'testapp')
 
 
 function assertFile(filename){
-    assert(fs.existsSync(filename),
-        filename + ' does not exist');
+    assert(fs.existsSync(filename), filename + ' does not exist');
 }
 
 describe('Setup', function(){

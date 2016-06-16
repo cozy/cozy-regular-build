@@ -2,7 +2,7 @@ var corbu = require('../index')
 var run = require('../utils/run')
 var paths = require('./filepaths')
 
- function coffee(source, dest, callback){
+function coffee(source, dest, callback){
      var args = ['--bare', '--map', '--output', dest, '--compile', source]
      if (corbu.doeswatch) args.push('--watch')
 
