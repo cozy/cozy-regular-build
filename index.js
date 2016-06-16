@@ -17,6 +17,7 @@ corbu.lintJS = require('./libs/lint-js');
 corbu.test = require('./libs/mocha')
 corbu.watch = require('./libs/watch')
 corbu.travisBefore = require('./libs/travis-env').beforeTravis
+corbu.stopDS = require('./libs/travis-env').stopDS
 
 try {
     corbu.appServerPackage = require(paths.SERVERPACKAGE)
