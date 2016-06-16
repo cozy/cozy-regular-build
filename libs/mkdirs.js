@@ -12,6 +12,7 @@ function mkdirs(dirs, callback){
 
 module.exports = function(callback){
     mkdirs([
+        paths.CLIENTPUBLIC,
         paths.BUILD,
         paths.BUILDCLIENT,
         paths.BUILDSERVER,

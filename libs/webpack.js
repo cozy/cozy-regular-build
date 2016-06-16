@@ -11,7 +11,8 @@ var paths = require('./filepaths')
 function noop(){}
 module.exports = function(callback){
     // use the `OPTIMIZE` env VAR to switch from dev to production build
-    var optimize = !corbu.dev && !corbu.doeswatch;
+    var optimize = !corbu.hasOption('--dev') && !corbu.doeswatch;
+    var out =  optimize ? paths.BUILDCLIENTPUBLIC : paths.CLIENTPUBLIC
 
     /**
      * Loaders used by webpack
@@ -30,11 +31,11 @@ module.exports = function(callback){
         },
         {
             test: /\.styl$/,
-            loader: ExtractTextPlugin.extract('style', cssOptions + '!stylus')
+            loader: ExtractTextPlugin.extract(cssOptions + '!stylus')
         },
         {
             test: /\.css$/,
-            loader: ExtractTextPlugin.extract('style', cssOptions)
+            loader: ExtractTextPlugin.extract(cssOptions)
         },
         {
             test: /\.jade$/,
@@ -74,23 +75,27 @@ module.exports = function(callback){
      * - BrowserSyncPlugin: make hot reload via browsersync exposed at
      *   http://localhost:3000, proxified to the server app port
      */
+    var outCSS = optimize ? 'app.[hash].css' : 'app.css'
     var plugins = [
-        new ExtractTextPlugin(optimize? 'app.[hash].css' : 'app.css'),
+        new ExtractTextPlugin(outCSS, {allChunks: true}),
         new webpack.optimize.CommonsChunkPlugin({
             name:      'main',
             children:  true,
             minChunks: 2
         }),
         new CopyPlugin([
-            { from: 'vendor/assets' },
-            { from: 'vendor/datePicker/assets/' }
+            { from: path.join(paths.CLIENT, 'app', 'assets') },
+            { from: path.join(paths.CLIENT, 'vendor/assets') },
+            { from: path.join(paths.CLIENT, 'vendor/datePicker/assets/') }
         ])
     ];
 
     if (optimize) {
         plugins = plugins.concat([
+            new webpack.IgnorePlugin(/images\/ui_/),
             new AssetsPlugin({
-                filename: '../build/webpack-assets.json'
+                path: path.join(out, '..', '..'),
+                filename: 'webpack-assets.json'
             }),
             new webpack.optimize.DedupePlugin(),
             new webpack.optimize.OccurenceOrderPlugin(),
@@ -134,26 +139,57 @@ module.exports = function(callback){
      */
 
 
-    var out =  optimize ? paths.BUILDCLIENTPUBLIC : paths.CLIENTPUBLIC
 
     var compiler = webpack({
-        entry: './app/initialize',
+        entry: path.join(paths.CLIENT, 'app', 'entry'),
         output: {
             path: out,
-            filename: optimize? 'app.[hash].js' : 'app.js'
+            filename: optimize ? 'app.[hash].js' : 'app.js'
+        },
+        resolveLoader: {
+            root: path.join(__dirname, '..', 'node_modules')
         },
         resolve: {
-            extensions: ['', '.js', '.coffee', '.jade', '.json']
+            extensions: ['', '.js', '.coffee', '.jade', '.json',
+                         '.styl', '.css'],
+            root: [
+                // some app use the require('models/x') style
+                path.join(paths.CLIENT, 'app'),
+                path.join(paths.CLIENT, 'node_modules')
+            ],
+            modulesDirectories: [
+                path.join('./node_modules'),
+                path.join(paths.CLIENT, 'node_modules'),
+                path.join(paths.CLIENT, 'vendor')
+            ]
         },
         debug: !optimize,
         devtool: 'source-map',
         module: {
             loaders: loaders
         },
+        node: {
+            fs: "empty" // for polyglot
+        },
         plugins: plugins,
-        postcss: postcss
+        postcss: postcss//,
+        // stylus: {
+        //     use: [require('nib')()],
+        //     import: [path.join(__dirname, 'node_modules',
+        //                 'nib/lib/nib/index.styl')]
+        // }
     });
 
-    if(corbu.doeswatch) compiler.run(callback)
-    else compiler.watch({}, noop)
+    if(corbu.doeswatch){
+        compiler.watch({}, noop)
+    }else{
+        console.log('start compiling')
+        compiler.run(function(err, stats){
+            console.log("DONE");
+            console.log(stats.toString({
+                errorDetails: true
+            }))
+            callback(err);
+        })
+    }
 }
