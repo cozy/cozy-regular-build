@@ -1,8 +1,10 @@
 var exec = require('child_process').exec
 var path = require('path')
 var assert = require('assert')
+var copy = require('../libs/copy')
 var fs = require('fs')
 var MIN = 60*1000
+var TESTAPPINIT = path.join(__dirname, 'testapp-initial')
 var TESTAPP = path.join(__dirname, 'testapp')
 
 
@@ -11,6 +13,10 @@ function assertFile(filename){
 }
 
 describe('Setup', function(){
+
+    it('When I start with a clean app', function(done){
+        copy(TESTAPPINIT, TESTAPP, done)
+    })
 
     it('When corbu is installed globally', function(done){
         this.timeout(10*MIN);
