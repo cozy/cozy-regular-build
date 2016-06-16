@@ -32,7 +32,23 @@ corbu.extendServerPackage = function(changes){
 }
 
 corbu.getDependencyBinary = function(which){
-    return join(__dirname, 'node_modules', '.bin', which);
+    var folders = [path.join(__dirname, 'node_modules', '.bin')]
+    .concat(process.env.PATH.split(':'))
+
+    for(var i=0, l=folders.length; i<l; i++)
+        if(fs.existsSync(path.join(folders[i], which)))
+            return path.join(folders[i], which)
+
+    var err = "Binary not found: " + which
+    err += "From corbu at " + __dirname;
+    err += "Searched in " + folders.join(', ');
+    try{
+        err += "require.resolve = " + require.resolve(which)
+    } catch (error) {
+        err += "require.resolve failed"
+    }
+
+    throw new Error(err);
 }
 
 var rimraf = require('rimraf');

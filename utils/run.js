@@ -1,12 +1,29 @@
 var corbu = require('../index');
+var path = require('path')
+
+once = function(fn){
+    var called = false
+    return function(){
+        if(!called){
+            called = true;
+            fn.apply(this, arguments);
+        }
+    }
+}
 
 module.exports = function(options, callback){
     if(corbu.debug)
         console.log('RUN', options.command, options.args.join(' '), "\n")
 
+    callback = once(callback);
+
+    var env = options.env || process.env
+    var localBins = path.join(__dirname, 'node_modules', '.bin')
+    env.PATH = localBins + ";" + (env.PATH || "")
+
     var child = require('child_process').spawn(options.command, options.args, {
         cwd: options.cwd || process.cwd(),
-        env: options.env || process.env,
+        env: env,
         stdio: [
             'ignore',
             options.silent && !corbu.debug ? 'ignore' : 'inherit',
@@ -17,6 +34,10 @@ module.exports = function(options, callback){
 
     var stderr = []
     child.stderr.on('data', stderr.push.bind(stderr))
+
+    child.on('error', function(err){
+        callback(err);
+    });
 
     child.on('exit', function(code){
         if(code != 0) {

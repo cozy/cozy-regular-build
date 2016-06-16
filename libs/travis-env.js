@@ -1,12 +1,14 @@
 var forever = require('forever');
+var fs = require('fs');
 var resolve = require('path').resolve
-var ds = resolve(__dirname, '..', 'node_modules', 'cozy-data-system')
-var logs = resolve(__dirname, '..', 'tmp')
+var join = require('path').join
+var logs = join(__dirname, '..', 'tmp')
 var run = require('../utils/run')
 var corbu = require('../index')
 var async = require('async')
 
-logFile = resolve(logs, 'forever-ds.log')
+var ds = join(require.resolve('cozy-data-system'), '../..')
+var logFile = resolve(logs, 'forever-ds.log');
 
 exports.startDS = function(callback){
     var child = forever.startDaemon(ds, {
