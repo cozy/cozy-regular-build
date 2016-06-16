@@ -18,11 +18,17 @@ var npm_argv = JSON.parse(process.env.npm_config_argv).cooked;
 var lifecycle_event = process.env.npm_lifecycle_event;
 var user_agent = process.env.npm_config_user_agent;
 var npm_version = user_agent.split(' ')[0].split('/')[1];
+
+if(npm_argv[0] === 'install' && lifecycle_event === 'prepublish'){
+    lifecycle_event = 'postinstallprepublish'
+}
+
 if( npm_argv[0] === 'run' ){
     var args = [lifecycle_event].concat(npm_argv.slice(2));
 }else{
     var args = [lifecycle_event].concat(npm_argv.slice(1))
 }
+
 
 var command = process.argv[2]
 args = args.concat(process.argv.slice(3))

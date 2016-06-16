@@ -101,3 +101,10 @@ corbu.prepublish = function(callback){
         corbu.build
     ], callback)
 }
+
+
+corbu.postinstallprepublish = function(callback){
+    console.log("NPM triggers a prepublish after npm install" +
+                ", corbu ignores it");
+    callback(null)
+}
