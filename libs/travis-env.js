@@ -23,7 +23,7 @@ exports.startDS = function(callback){
         outFile             : resolve(logs, 'forever-ds-stdout.log'),
         errFile             : resolve(logs, 'forever-ds-stderr.log'),
     });
-    setTimeout(callback, 1000) // let DS start
+    setTimeout(callback, 5000) // let DS start
 }
 
 exports.stopDS = function(callback){
