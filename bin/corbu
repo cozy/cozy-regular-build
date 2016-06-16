@@ -7,6 +7,16 @@ function exit( code ){
     setTimeout(function(){ process.exit(code) }, 100)
 }
 
+function findLocalCorbu(fromPath){
+    var binLocation = path.join(fromPath, 'node_modules', '.bin', 'corbu')
+    if(fromPath === '/'){
+        return null
+    }else if(fs.existsSync(binLocation)){
+        return fromPath
+    }else{
+        return findLocalCorbu(path.dirname(fromPath));
+    }
+}
 
 // handle options
 var options = {
@@ -34,13 +44,34 @@ var aliases = {
     "build:client": "buildClient",
     "build:server": "buildServer",
     "travis-before": "travisBefore",
-    "travis-after-success": "doPublish"
+    "travis-after-success": "doPublish",
+    "stop-ds":"stopDS"
 };
 
 if( aliases[command] )
     command = aliases[command]
 
-if( corbu[command] ){
+// if corbu is not installed locally
+console.log(__dirname, process.cwd());
+if( false && command != 'setup' && __dirname.indexOf(process.cwd()) === -1){
+    var localCorbu = findLocalCorbu(process.cwd());
+    if(!localCorbu)
+        console.log('install corbu in your app\'s folder');
+        return exit(1)
+
+    var run = require('../utils/run');
+    run({
+        command: localCorbu,
+        args: process.argv
+    }, function( err ){
+        if( err ){
+            console.log(err.stack);
+            exit(err.code || 1)
+        } else {
+            exit(0)
+        }
+    })
+}else if( corbu[command] ){
     console.log('cozy-regular-build', command)
     corbu[command](function( err ){
         if( err ){
