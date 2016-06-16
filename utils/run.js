@@ -21,16 +21,22 @@ module.exports = function(options, callback){
     var localBins = path.join(__dirname, 'node_modules', '.bin')
     env.PATH = localBins + ";" + (env.PATH || "")
 
+    var shouldOutput = corbu.debug || !options.silent
+    var node010 = process.version.match(/v0\.10/)
+    var stdout = !shouldOutput ? 'ignore' : node010 ? 'pipe' : 'inherit'
+
     var child = require('child_process').spawn(options.command, options.args, {
         cwd: options.cwd || process.cwd(),
         env: env,
         stdio: [
             'ignore',
-            options.silent && !corbu.debug ? 'ignore' : 'inherit',
+             stdout,
             'pipe'
         ]
 
     })
+
+    if(stdout === 'pipe') child.stdout.pipe(process.stdout)
 
     var stderr = []
     child.stderr.on('data', stderr.push.bind(stderr))
