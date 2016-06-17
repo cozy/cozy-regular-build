@@ -4,27 +4,9 @@
       "level" : "error"
     },
     "no_empty_param_list": {
-        "level": "warn"
+        "level": "error"
     },
     "prefer_english_operator": {
-        "level": "warn"
-    },
-    "check_scope": {
-        "module": "coffeescope2",
-        "level": "warn",
-        "environments": ["es5"],
-        "globals": {
-            "jQuery": true,
-            "$": true
-        },
-        "overwrite": true,
-        "shadow": true,
-        "shadow_builtins": false,
-        "shadow_exceptions": ["err", "next"],
-        "undefined": true,
-        "hoist_local": true,
-        "hoist_parent": true,
-        "unused_variables": true,
-        "unused_arguments": false
+        "level": "error"
     }
 }

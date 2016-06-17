@@ -27,7 +27,7 @@ module.exports = function(callback){
     var loaders = [
         {
             test: /\.coffee$/,
-            loader: 'coffee'
+            loader: 'eslint!coffee!coffeelint'
         },
         {
             test: /\.styl$/,
@@ -172,7 +172,11 @@ module.exports = function(callback){
             fs: "empty" // for polyglot
         },
         plugins: plugins,
-        postcss: postcss//,
+        postcss: postcss,
+        eslint: {
+            configFile: path.join(paths.CONFIGFILES, 'client-.eslintrc.js')
+        },
+        coffeelint: require(path.join(paths.CONFIGFILES, 'coffeelint.json'))
         // stylus: {
         //     use: [require('nib')()],
         //     import: [path.join(__dirname, 'node_modules',

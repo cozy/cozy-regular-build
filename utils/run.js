@@ -47,8 +47,8 @@ module.exports = function(options, callback){
 
     child.on('exit', function(code){
         if(code != 0) {
-            var err = new Error( options.command + 'terminated with' +
-                'non-zero code code (' + code + '):' +
+            var err = new Error( options.command + ' terminated with' +
+                ' non-zero code code (' + code + '): ' +
                 Buffer.concat(stderr).toString('utf8'));
             err.code = code
             callback(err);
