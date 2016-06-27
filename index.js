@@ -67,6 +67,7 @@ corbu.buildClient = function(callback){
 
 var copy = require('./libs/copy');
 corbu.copyAssets = function(callback){
+    if(!fs.existsSync(paths.SERVERASSETS)) return callback(null)
     copy(paths.SERVERASSETS, paths.BUILDSERVERASSETS, callback);
 }
 corbu.copyLocales = function(callback){
