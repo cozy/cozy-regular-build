@@ -27,6 +27,7 @@ function ensureDS(callback){
 
 var nocallback = function(){}
 module.exports = function(callback){
+    if(!process.env.PORT) process.env.PORT = 9117
     corbu.doeswatch = true
     ensureDS(function(err){
         if(err) return callback(err);
