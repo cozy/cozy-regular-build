@@ -1,21 +1,21 @@
 var corbu = require('../index');
-var run = require('../utils/run')
-var copy = require('./copy')
-var BRUNCHCONF = require('path').join(__dirname, 'brunch-config.json');
+var run = require('../utils/run');
+var copy = require('./copy');
 var paths = require('./filepaths');
 
-
-
-function brunch(clientfolder, callback){
+function brunch(clientfolder, callback) {
     run({
         command: corbu.getDependencyBinary('brunch'),
-        args: [corbu.doeswatch ? 'watch' : 'build', clientfolder]
+        args: [corbu.doeswatch ? 'watch' : 'build', clientfolder],
     }, callback);
 }
 
-module.exports = function(callback){
-    brunch(paths.CLIENT, function(err) {
-        if( err ) return callback(err);
-        copy(paths.CLIENTPUBLIC, paths.BUILDCLIENTPUBLIC, callback)
+module.exports = function (callback) {
+    brunch(paths.CLIENT, function (err) {
+        if (err) {
+            callback(err);
+        } else {
+            copy(paths.CLIENTPUBLIC, paths.BUILDCLIENTPUBLIC, callback);
+        }
     });
-}
+};
