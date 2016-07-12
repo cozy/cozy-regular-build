@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha tests"
+    "test": "mocha tests",
+    "lint": "eslint -c .eslintrc.json ."
   },
   "bin": {
     "corbu": "bin/corbu",
@@ -47,6 +48,7 @@
     "nodemon": "1.9.2",
     "npm-run-all": "2.1.1",
     "postcss-loader": "0.9.1",
+    "printit": "^0.1.20",
     "pug-runtime": "2.0.1",
     "rimraf": "2.5.2",
     "should": "9.0.2",
@@ -54,5 +56,12 @@
     "stylus": "0.54.5",
     "stylus-loader": "2.1.1",
     "webpack": "1.13.1"
+  },
+  "devDependencies": {
+    "eslint": "^2.11.1",
+    "eslint-config-airbnb": "^9.0.1",
+    "eslint-plugin-import": "^1.10.2",
+    "eslint-plugin-jsx-a11y": "^1.5.5",
+    "eslint-plugin-react": "^5.2.2"
   }
 }
