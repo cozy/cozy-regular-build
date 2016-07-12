@@ -2,58 +2,63 @@ var path = require('path');
 var webpack = require('webpack');
 
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var CopyPlugin        = require('copy-webpack-plugin');
-var AssetsPlugin      = require('assets-webpack-plugin');
+var CopyPlugin = require('copy-webpack-plugin');
+var AssetsPlugin = require('assets-webpack-plugin');
 var BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 var corbu = require('../index');
-var paths = require('./filepaths')
+var paths = require('./filepaths');
+var coffeelintConfig = require(path.join(paths.CONFIGFILES, 'coffeelint.json'));
+var autoprefixer = require('autoprefixer')(['last 2 versions']);
+var mqpacker = require('css-mqpacker');
+var postcssConfig = [autoprefixer, mqpacker];
+var log = require('printit')({ prefix: 'libs/webpack', date: true });
 
-function noop(){}
-module.exports = function(callback){
+function nocallback() {}
+module.exports = function (callback) {
     // use the `OPTIMIZE` env VAR to switch from dev to production build
     var optimize = !corbu.hasOption('--dev') && !corbu.doeswatch;
-    var out =  optimize ? paths.BUILDCLIENTPUBLIC : paths.CLIENTPUBLIC
+    var out = optimize ? paths.BUILDCLIENTPUBLIC : paths.CLIENTPUBLIC;
 
     /**
      * Loaders used by webpack
      *
      * - CSS and images files from `vendor` are excluded
-     * - stylesheets are optimized via cssnano, minus svgo and autoprefixer that are
-     * customized via PostCSS
+     * - stylesheets are optimized via cssnano, minus svgo and autoprefixer
+     *    that are customized via PostCSS
      * - images are cache-busted in production build
      */
-    var cssOptions = optimize? 'css?-svgo&-autoprefixer!postcss':'css';
-    var imgPath = 'img/' + '[name]' + (optimize? '.[hash]': '') + '.[ext]';
+    var cssOptions = optimize ? 'css?-svgo&-autoprefixer!postcss' : 'css';
+    var imgPath = 'img/[name]' + (optimize ? '.[hash]' : '') + '.[ext]';
     var loaders = [
         {
             test: /\.coffee$/,
-            loader: 'eslint!coffee!coffeelint'
+            loader: 'eslint!coffee!coffeelint',
         },
         {
             test: /\.styl$/,
-            loader: ExtractTextPlugin.extract(cssOptions + '!stylus')
+            loader: ExtractTextPlugin.extract(cssOptions + '!stylus'),
         },
         {
             test: /\.css$/,
-            loader: ExtractTextPlugin.extract(cssOptions)
+            loader: ExtractTextPlugin.extract(cssOptions),
         },
         {
             test: /\.jade$/,
-            loader: 'jade'
+            loader: 'jade',
         },
         {
             test: /\.json$/,
-            loader: 'json'
+            loader: 'json',
         },
         {
             test: /\.(png|gif|jpe?g|svg)$/i,
             exclude: /vendor/,
-            loader: 'file?name=' + imgPath
+            loader: 'file?name=' + imgPath,
         },
         {
             test: /\.(ttf|eot|woff|woff2)$/i,
-            loader: 'file?name=fonts/[name].[ext]'
-        }
+            loader: 'file?name=fonts/[name].[ext]',
+        },
     ];
 
     /**
@@ -75,61 +80,46 @@ module.exports = function(callback){
      * - BrowserSyncPlugin: make hot reload via browsersync exposed at
      *   http://localhost:3000, proxified to the server app port
      */
-    var outCSS = optimize ? 'app.[hash].css' : 'app.css'
+    var outCSS = optimize ? 'app.[hash].css' : 'app.css';
     var plugins = [
-        new ExtractTextPlugin(outCSS, {allChunks: true}),
+        new ExtractTextPlugin(outCSS, { allChunks: true }),
         new webpack.optimize.CommonsChunkPlugin({
-            name:      'main',
-            children:  true,
-            minChunks: 2
+            name: 'main',
+            children: true,
+            minChunks: 2,
         }),
         new CopyPlugin([
             { from: path.join(paths.CLIENT, 'app', 'assets') },
             { from: path.join(paths.CLIENT, 'vendor/assets') },
-            { from: path.join(paths.CLIENT, 'vendor/datePicker/assets/') }
-        ])
-    ];
-
-    if (optimize) {
-        plugins = plugins.concat([
+            { from: path.join(paths.CLIENT, 'vendor/datePicker/assets/') },
+        ]),
+    ].concat(
+        optimize ? [
             new webpack.IgnorePlugin(/images\/ui_/),
             new AssetsPlugin({
                 path: path.join(out, '..', '..'),
-                filename: 'webpack-assets.json'
+                filename: 'webpack-assets.json',
             }),
             new webpack.optimize.DedupePlugin(),
             new webpack.optimize.OccurenceOrderPlugin(),
             new webpack.optimize.UglifyJsPlugin({
                 mangle: true,
                 compress: {
-                    warnings: false
+                    warnings: false,
                 },
             }),
             new webpack.DefinePlugin({
-                __SERVER__:      !optimize,
+                __SERVER__: !optimize,
                 __DEVELOPMENT__: !optimize,
-                __DEVTOOLS__:    !optimize
-            })
-        ]);
-    } else {
-        plugins = plugins.concat([
+                __DEVTOOLS__: !optimize,
+            }),
+        ] : [
             new BrowserSyncPlugin({
                 proxy: 'http://localhost:' + (process.env.PORT || 9125) + '/',
-                open: false
-            })
-        ]);
-    }
-
-    /**
-     * PostCSS Config
-     *
-     * - autoprefixer to add vendor prefixes for last 2 versions
-     * - mqpacker to bring together all MQ rule's set
-     */
-    var postcss = [
-        require('autoprefixer')(['last 2 versions']),
-        require('css-mqpacker')
-    ];
+                open: false,
+            }),
+        ]
+    );
 
     /**
      * Webpack config
@@ -138,16 +128,14 @@ module.exports = function(callback){
      * - cache-bust assets when build for production
      */
 
-
-
     var compiler = webpack({
         entry: path.join(paths.CLIENT, 'app', 'entry'),
         output: {
             path: out,
-            filename: optimize ? 'app.[hash].js' : 'app.js'
+            filename: optimize ? 'app.[hash].js' : 'app.js',
         },
         resolveLoader: {
-            root: path.join(__dirname, '..', 'node_modules')
+            root: path.join(__dirname, '..', 'node_modules'),
         },
         resolve: {
             extensions: ['', '.js', '.coffee', '.jade', '.json',
@@ -155,28 +143,28 @@ module.exports = function(callback){
             root: [
                 // some app use the require('models/x') style
                 path.join(paths.CLIENT, 'app'),
-                path.join(paths.CLIENT, 'node_modules')
+                path.join(paths.CLIENT, 'node_modules'),
             ],
             modulesDirectories: [
                 path.join('./node_modules'),
                 path.join(paths.CLIENT, 'node_modules'),
-                path.join(paths.CLIENT, 'vendor')
-            ]
+                path.join(paths.CLIENT, 'vendor'),
+            ],
         },
         debug: !optimize,
         devtool: 'source-map',
         module: {
-            loaders: loaders
+            loaders: loaders,
         },
         node: {
-            fs: "empty" // for polyglot
+            fs: 'empty', // for polyglot
         },
         plugins: plugins,
-        postcss: postcss,
+        postcss: postcssConfig,
         eslint: {
-            configFile: path.join(paths.CONFIGFILES, 'client-.eslintrc.js')
+            configFile: path.join(paths.CONFIGFILES, 'client-.eslintrc.js'),
         },
-        coffeelint: require(path.join(paths.CONFIGFILES, 'coffeelint.json'))
+        coffeelint: coffeelintConfig,
         // stylus: {
         //     use: [require('nib')()],
         //     import: [path.join(__dirname, 'node_modules',
@@ -184,16 +172,16 @@ module.exports = function(callback){
         // }
     });
 
-    if(corbu.doeswatch){
-        compiler.watch({}, noop)
-    }else{
-        console.log('start compiling')
-        compiler.run(function(err, stats){
-            console.log("DONE");
-            console.log(stats.toString({
-                errorDetails: true
-            }))
+    if (corbu.doeswatch) {
+        compiler.watch({}, nocallback);
+    } else {
+        log.info('start compiling');
+        compiler.run(function (err, stats) {
+            log.info('DONE');
+            log.info(stats.toString({
+                errorDetails: true,
+            }));
             callback(err);
-        })
+        });
     }
-}
+};

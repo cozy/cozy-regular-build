@@ -1,30 +1,41 @@
-var path = require('path')
 var corbu = require('../index');
-var exec = require('child_process').exec
+var fs = require('fs');
+var exec = require('child_process').exec;
+var log = require('printit')({ prefix: 'libs/copy', date: true });
 
-
-
-ensureNoDest = function(dest, callback){
-    if(!fs.existsSync(dest)) return callback(null);
+function ensureNoDest(dest, callback) {
     var cmd = 'rm --recursive --force ' + dest;
-    if(corbu.debug) console.log('RM   ', dest, cmd);
-    exec(cmd, function(err, stdout, stderr){
-        if(corbu.debug) console.log(stdout);
-        if(!err && stderr && stderr.length > 0) err = new Error(stderr);
-        callback(err);
-    });
-}
 
-module.exports = function(source, dest, callback){
-    ensureNoDest(dest, function(err){
-        if(err) return callback(err);
-        var cmd = 'cp --recursive ';
-        cmd += ' ' + source + ' ' + dest;
-        if(corbu.debug) console.log('COPY ', source, dest, cmd);
-        exec(cmd, function(err, stdout, stderr){
-            if(corbu.debug) console.log(stdout);
-            if(!err && stderr && stderr.length > 0) err = new Error(stderr);
+    if (!fs.existsSync(dest)) {
+        callback(null);
+    } else {
+        if (corbu.debug) log.info('RM   ' + dest + ' ' + cmd);
+        exec(cmd, function (err, stdout, stderr) {
+            if (corbu.debug) log.raw(stdout);
+            if (!err && stderr && stderr.length > 0) err = new Error(stderr);
             callback(err);
         });
-    });
+    }
 }
+
+module.exports = function (source, dest, callback) {
+    ensureNoDest(dest, function (err) {
+        var cmd = 'cp --recursive ';
+        if (err) {
+            callback(err);
+        } else {
+            cmd += ' ' + source + ' ' + dest;
+            if (corbu.debug) {
+                log.info('COPY ' + source + ' ' + dest + ' ' + cmd);
+            }
+
+            exec(cmd, function (err, stdout, stderr) {
+                if (corbu.debug) log.raw(stdout);
+                if (!err && stderr && stderr.length > 0) {
+                    err = new Error(stderr);
+                }
+                callback(err);
+            });
+        }
+    });
+};

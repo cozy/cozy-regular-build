@@ -1,15 +1,15 @@
 module.exports = {
-    "env": {
-        "node": true,
-        "mocha": true,
+    env: {
+        node: true,
+        mocha: true,
     },
-    "global":["emit"],
-    "extends": "eslint:recommended",
-    "rules": {
-        "indent": ["off"],
+    global:["emit"],
+    extends: "eslint:recommended",
+    rules: {
+        indent: ["off"],
+        quotes: ["off"],
+        semi: ["off"],
         "linebreak-style": ["error", "unix"],
-        "quotes": ["off"],
-        "semi": ["off"],
         "no-extra-semi": ["off"],
         "no-unused-vars": ["error", { "varsIgnorePattern": "error" }]
     }
